@@ -2,8 +2,8 @@
 Tema:Arvores Binarias de Pesquisa (ABP) 
 Materia:EDA 
 Professor: Nilton
-Integrantes: 1-Henrique Augusto - Matricula:??/??????? - ??
-             2-Ricardo - Matrícula:??/??????? - ??
+Integrantes: 1-Henrique Augusto - Matricula:11/0148886 - henriqueaps2003@hotmail.com
+             2-Ricardo Gonçalves Teixeira - Matrícula:12/0021561 - ricardocdzg@hotmail.com
              3-Victor Fellipe Gonçalves Cabeceira - Matrícula:13/0048976 - victorfgcabeceira@gmail.com
              
              
@@ -27,6 +27,8 @@ Figura 2.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "funcoes.h"
+
 
 //Comeco da struct - teste
 
@@ -37,12 +39,11 @@ void menu(){
     printf("\t\t\t____________________________\n\n");
 
     printf("\t\t **-------------------------------------------** \n");
-    printf("\t\t || \t 1) Exibir registro                   || \n"); //Mostra nome e predio, pede o codigo
-    printf("\t\t || \t 2) Excluir registro                  || \n");  //Pede o codigo para realizar a exclusao
-    printf("\t\t || \t 3) Ordenar e gerar arquivo de saída  || \n"); //Grava o arquivo de saída a partir do especificado pelo usuário entre por: codigo,nome e predio
-    printf("\t\t || \t 4) TESTE                             || \n");
-    printf("\t\t || \t 5) TESTE                             || \n");
-    printf("\t\t || \t 6) Sair do programa                  || \n");
+    printf("\t\t || \t 1) Buscar registro                   || \n"); //Mostra nome e predio, pede o codigo
+    printf("\t\t || \t 2) Excluir registro                  || \n"); //Pede o codigo para realizar a exclusao
+    printf("\t\t || \t 3) Ordenar e gerar arquivo de saida  || \n"); //Grava o arquivo de saída a partir do especificado pelo usuário entre por: codigo,nome e predio
+    printf("\t\t || \t 4) Listar registro                   || \n"); //Lista o registro
+    printf("\t\t || \t 5) Sair do programa                  || \n");
     printf("\t\t **-------------------------------------------** \n");
 
 }
@@ -50,8 +51,47 @@ void menu(){
 //Main
 main()
 {
-      int opcao, ordem,codigoDePesquisa;
-      
+     	int opcao=0,ordem=0,codigoDePesquisa=0,numeroDeLinhas=0,construir=0;
+	char nomeArquivo[15],novoNome[15];;
+	FILE *estrutura;
+	FILE *novotxt;
+	FILE *teste;
+	struct Tupla *arquivo=NULL;
+	struct ArvoreCodigo *arvore=NULL;
+	struct Tupla *novoarquivo=NULL;
+	struct ArvoreCodigo *novaarvore=NULL;
+	struct ArvoreCodigo *arvorePesquisa=NULL;
+    bool validacao = true;
+	//Carregando o arquivo para o vetor de structs
+   	   
+       do
+       {   
+           system("cls");
+           fflush(stdin);         
+           printf("Digite o nome do arquivo a ser carregado:\n");
+    	   gets(nomeArquivo);
+                                      
+           teste = fopen(nomeArquivo,"r");
+        
+           if(teste == NULL)
+          {
+              printf ("ERRO! Arquivo nao encontrado!\n");
+              printf ("Tente novamente! \n");
+              validacao = true;
+              getchar();
+           }         
+           else
+           {
+               printf("Agore informe o numero de linhas do seu documento:\n");
+       	       scanf("%d",&numeroDeLinhas);     
+               printf ("Arquivo carregado com sucesso!! \n");
+               validacao = false; 
+               arquivo=carregarArquivo(teste,nomeArquivo,numeroDeLinhas,&arvore,construir);
+           }
+        
+       }while (validacao == true);
+   	   
+	  
       do
       {
           system("cls");
@@ -62,50 +102,116 @@ main()
           switch(opcao){
                 
             case 1:
-                printf("\nInforme o codigo do registro que deseja visualizar: ");
-                scanf("%d",&codigoDePesquisa); //Exemplo
-                //retorna_dados(busca_por_codigo(arvore_codigos,codigoDePesquisa));
+                    printf("\nInforme o codigo do registro que deseja visualizar: ");
+                    
+                    scanf("%d",&codigoDePesquisa); //Exemplo
+                    
+                    //retorna_dados(busca_por_codigo(arvore_codigos,codigoDePesquisa));
+            
+            		arvorePesquisa=pesquisarCodigo(arvore,codigoDePesquisa);
+            
+            		if(arvorePesquisa == NULL)
+            		{
+            			printf("\nCurso nao encontrado!!\n");
+            		}
+            		else
+            		{
+            			printf("Sua materia e: %s\n",arquivo[arvorePesquisa->linha].curso);
+            			printf("Seu predio e: %d\n\n",arquivo[arvorePesquisa->linha].predio);	
+            		}
+            		system("pause>>NULL");
+		
                 break;
             case 2:
-                printf("\nInforme o codigo do curso que se deseja excluir : ");
-                //HUEHUEHUHE
+                    printf("\nInforme o codigo do curso que se deseja excluir: ");
+                            //HUEHUEHUHE
+            		fflush(stdin);
+            
+            		scanf("%d",&codigoDePesquisa);
+            
+            		arvore = excluirNo(arvore,codigoDePesquisa);
+            		
+            		system("pause>>NULL");
                 break;
             case 3:
-                printf("\nQual o metodo de ordenacao desejado?\n(1)-Codigo \n(2)-Nome\n(3)-Predio\n");
-                scanf("%i",&ordem);
-                    switch(ordem)
-                    {
-                        case 1:
-                             printf("Ordenacao por codigo.\n");
-                             /*ordena_codigo(Arvore);
-                             geraArquivo();*/
-                             break;              
-                        case 2:
-                             printf("Ordenacao por nome.\n");
-                             /*ordena_nome(Arvore);
-                             geraArquivo();*/
-                             break;
-                        case 3:
-                             printf("Ordenacao por predio.\n");
-                             /*ordena_predio(Arvore);
-                             geraArquivo();*/
-                             break;
-                        default:
-                             printf("Opcao invalida.\n");
-                    }
-            
+                    printf("\nQual o metodo de ordenacao desejado?\n(1)-Codigo \n(2)-Nome\n(3)-Predio\n");
+                    scanf("%i",&ordem);
+                        switch(ordem)
+                        {
+                            case 1:
+                                 
+                                   printf("Ordenacao por codigo.\n");
+                                   /*ordena_codigo(Arvore);
+                                   geraArquivo();*/
+                                   
+                				   printf("\nQual nome voce gostaria de por em seu arquivo\?: \n");
+                   				   fflush(stdin);
+                   				   scanf("%s",&novoNome);
+                    
+                				   novotxt=fopen(novoNome,"wt");
+                   				   ordenaCodigo(arvore,novotxt,arquivo);
+                   				   fclose(novotxt);
+                   				   
+                   				   system("pause>>NULL");
+                                				
+                                 break;              
+                            case 2:
+                                   printf("Ordenacao por nome.\n");
+                                   /*ordena_nome(Arvore);
+                                   geraArquivo();*/
+                   				   construir = 1;
+                    
+                				   novoarquivo=carregarArquivo(estrutura,nomeArquivo,numeroDeLinhas,&novaarvore,construir);
+                    				
+                   				   printf("\nQual nome voce gostaria de por em seu arquivo\?: \n");
+                   		    	   fflush(stdin);
+                   				   scanf("%s",&novoNome);
+                    
+                				   novotxt=fopen(novoNome,"wt");
+                   				   ordenaCodigo(novaarvore,novotxt,novoarquivo);
+                   				   fclose(novotxt);
+                    
+                    				system("pause>>NULL");				                             
+    				             break;
+                            case 3:
+                                    printf("Ordenacao por predio.\n");
+                                    /*ordena_predio(Arvore);
+                                    geraArquivo();*/
+                                    construir=3;
+    	
+                                    novoarquivo=carregarArquivo(estrutura,nomeArquivo,numeroDeLinhas,&novaarvore,construir);
+    				
+                                    printf("\nQual nome voce gostaria de por em seu arquivo\?: \n");
+    				                fflush(stdin);
+    				                scanf("%s",&novoNome);
+    
+    				                novotxt=fopen(novoNome,"wt");
+    				                ordenaCodigo(novaarvore,novotxt,novoarquivo);
+    				                fclose(novotxt);
+    
+                    				system("pause>>NULL");
+                                 break;
+                            default:
+                                 printf("Opcao invalida.\n");
+                        }
+                     
                 break;
             case 4:
+                
+                //Listar 
+                 
                 break;
             case 5:
-                break;
-            case 6:
                 printf ("\n\nSaindo do programa!\n\n");
+		        break;
             default:
                 printf("\nOpcao invalida!\n");
                 break;
-        }
-    }while(opcao!=6);
+                
+		        
+	}
+    }while(opcao!=5);
+	
 
-    system("pause");
+    system("PAUSE");
 }//Fim Main
